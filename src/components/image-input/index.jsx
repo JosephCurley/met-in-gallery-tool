@@ -8,12 +8,12 @@ const ImageInput = ({ searchObjects }) => {
 
 	const worker = createWorker({
 		logger: m => {
-			console.log(m);
-			let text = "Processing...";
+			console.debug(m);
 			if (m.status === "recognizing text") {
-				text += ` ${Math.floor(m.progress * 100)}%`;
+				setImageInputText(`Processing: ${Math.floor(m.progress * 100)}%`);
+			} else {
+				setImageInputText("Loading...");
 			}
-			setImageInputText(text);
 		},
 	});
 	
