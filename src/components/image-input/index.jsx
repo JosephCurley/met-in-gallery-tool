@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createWorker } from 'tesseract.js';
+import { createWorker, createScheduler } from 'tesseract.js';
 
 const ImageInput = ({ searchObjects }) => {
 	const defaultButtonText = 'Scan Label Text';
 	const [imageInputText, setImageInputText] = useState(defaultButtonText);
 	const accessionRegex = /^[a-z]{0,4}?(.\d+(\.\d+)*.{4,}$)/i;
+	const scheduler = createScheduler();
 	const worker = createWorker({
 		logger: m => {
 			console.log(m);
@@ -16,6 +17,9 @@ const ImageInput = ({ searchObjects }) => {
 			setImageInputText(text);
 		}
 	});
+	const worker2 = createWorker();
+	const worker3 = createWorker();
+	const worker4 = createWorker();
 
 	const findTextToSearchFor = data => {
 		let accessionNumber = null;
@@ -48,11 +52,28 @@ const ImageInput = ({ searchObjects }) => {
 		reader.readAsDataURL(file);
 		reader.onload = async () => {
 			await worker.load();
+			await worker2.load();
+			await worker3.load();
+			await worker4.load();
 			await worker.loadLanguage('eng');
+			await worker2.loadLanguage('eng');
+			await worker3.loadLanguage('eng');
+			await worker4.loadLanguage('eng');
 			await worker.initialize('eng');
-			const { data } = await worker.recognize(reader.result);
-			console.log(data);
-			await worker.terminate();
+			await worker2.initialize('eng');
+			await worker3.initialize('eng');
+			await worker4.initialize('eng');
+
+			scheduler.addWorker(worker);
+	  	scheduler.addWorker(worker2);
+			//const { data } = await worker.recognize(reader.result);
+			//console.log(data);
+			console.log(file);
+			const data = await Promise.all(Array(10).fill(0).map(() => (
+    		scheduler.addJob('recognize', reader.result)
+  		)))
+  		console.log(data);
+  		await scheduler.terminate(); // It also terminates all workers.
 			const searchQuery = findTextToSearchFor(data);
 			if (searchQuery) {
 				let success = true;
