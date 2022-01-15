@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import { createWorker } from 'tesseract.js';
 
-const ImageInput = ({ searchObjects }) => {
+const ImageInput = memo(({ searchObjects }) => {
 	const defaultButtonText = 'Scan Label Text';
 	const [imageInputText, setImageInputText] = useState(defaultButtonText);
 	const accessionRegex = /^[a-z]{0,4}?(.\d+(\.\d+)*.{4,}$)/i;
@@ -126,9 +126,10 @@ const ImageInput = ({ searchObjects }) => {
 			</label>
 		</div>
 	);
-};
+}, () => true);
 
 ImageInput.propTypes = {
 	searchObjects: PropTypes.func
 };
+
 export default ImageInput;
