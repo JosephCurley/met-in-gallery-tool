@@ -29,6 +29,7 @@ const App = () => {
 
 	const [activeCollectionName, setActiveCollectionName] = useState('');
 	const [editingExistingCollection, setEditingExistingCollection] = useState(false);
+
 	const [collections, setCollections] = useState(
 		JSON.parse(localStorage.getItem('collections')) || {}
 	);
@@ -38,6 +39,8 @@ const App = () => {
 	const [activeObject, setActiveObject] = useState(
 		Object.keys(savedObjects).length ? savedObjects[Object.keys(savedObjects)[0]] : defaultObject
 	);
+
+	const [darkmode, setDarkmode] = useState(false);
 
 	const setURL = () => {
 		const ids = Object.keys(savedObjects)
@@ -213,6 +216,9 @@ const App = () => {
 		}
 		// If there are obects in the URL, set SavedObjects to match.
 		const objectsFromURL = params.get('o');
+	
+		setDarkmode(params.get('darkmode'));
+		console.log(params.get(`darkmode`));
 		if (objectsFromURL) {
 			handleDataFromURL(objectsFromURL);
 			window.history.replaceState({}, '', `${url.origin}`);
@@ -240,7 +246,7 @@ const App = () => {
 	}, [collections]);
 
 	return (
-		<div className="object-search-app">
+		<div className={darkmode ? `darkmode object-search-app` : `object-search-app`}>
 			<main className="main__section" ref={objectSearchRef}>
 				<div className="main__title-bar">
 					<a

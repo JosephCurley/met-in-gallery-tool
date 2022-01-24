@@ -57,11 +57,31 @@ h1 {
 .button--ghost {
 	@include primary-button();
 	@include primary-button--ghost-dark();
+
+	.darkmode & {
+		border-color: $color-white;
+		color: $color-white;
+	}
+	.darkmode &:hover,
+	.darkmode &:focus {
+		background-color: $color-white;
+		color: $color-grey-900;
+	}
 }
 
 .button--secondary {
 	@include secondary-button();
 	@include secondary-button--ghost-dark();
+
+	.darkmode & {
+		color: $color-white;
+		border-color: $color-white;
+	}
+	.darkmode &:hover,
+	.darkmode &:focus {
+		background-color: $color-white;
+		color: $color-grey-900;
+	}
 }
 
 .button--tertiary {
@@ -70,11 +90,17 @@ h1 {
 }
 
 .object-search-app {
+	color: $color-grey-900;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	@media (orientation: landscape) {
 		flex-direction: row;
+	}
+
+	&.darkmode {
+		background-color: $color-grey-900;
+		color: $color-white;
 	}
 }
 
@@ -111,6 +137,10 @@ h1 {
 	@media (orientation: landscape) {
 		box-shadow: none;
 		position: relative;
+	}
+	
+	.darkmode & {
+		background-color: rgba($color-grey-900, 0.8);
 	}
 }
 
@@ -151,6 +181,7 @@ h1 {
 	@include button-reset();
 	@include typography-link();
 	align-self: center;
+	border-color: currentColor;
 }
 
 .collections__save-bar {

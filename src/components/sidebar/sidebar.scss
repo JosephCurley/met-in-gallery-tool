@@ -15,6 +15,11 @@
 	@media (orientation: landscape) and (min-width: $bp-small-screen) {
 		flex-basis: 450px;
 	}
+
+	.darkmode & {
+		color: $color-white;
+		background-color: $color-grey-900;
+	}
 }
 
 .sidebar__section {
@@ -25,6 +30,11 @@
 	@media (orientation: landscape)  {
 		height: calc(100vh - 2*#{$sidebar-title-height});
 		padding: $spacing-xxs;
+	}
+
+	.darkmode & {
+		color: $color-white;
+		background-color: $color-grey-900;
 	}
 }
 
@@ -53,6 +63,12 @@
 			top: $sidebar-title-height;
 		}
 	}
+
+	.darkmode & {
+		color: $color-white;
+		background-color: rgba($color-grey-900, 0.8);
+	}
+
 }
 
 .sidebar__title-link {
