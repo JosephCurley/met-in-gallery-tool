@@ -1,364 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import ActiveObject from './components/active-object';
-import SavedObject from './components/saved-object';
-import CollectionItem from './components/collection-item';
-import ImageInput from './components/image-input';
-import defaultObject from './helpers/defaultObjectModel';
-import SearchInput from "./components/search-input";
-import OfflineNotification from "./components/offline-notification";
-import { searchAPI, fetchObjects } from "./helpers/api";
-import Hashids from "hashids";
+import React from 'react';
 import './app.scss';
+import { MapSvg, CloseSvg } from './mavSvg';
+import PropTypes from 'prop-types';
 
-const url = new URL(`${window.location}`);
-const params = new URLSearchParams(url.search.slice(1));
+const Section = props => {
+	return(
+		<section className="welcome-links-section">
+			<h3>{props.heading}</h3>
+			{props.links.map((link, index)=>{
+				return (<a href={link.url} className="welcome-link button primary-button primary-button--ghost-light primary-button--small" key={index}>{link.text}</a>)
+			})}
+		</section>)
+}
 
-const hashids = new Hashids()
+Section.propTypes = {
+	heading: PropTypes.string,
+	links: PropTypes.array
+}
 
-const App = () => {
-	const objectsGridRef = React.createRef();
-	const collectionsRef = React.createRef();
-	const objectSearchRef = React.createRef();
+const MapButton = props => {
+	return (<div onClick={props.onClick} className="map-svg-container">
+		{props.showMap && <CloseSvg />}
+		{!props.showMap && <MapSvg />}
+	</div>)
+}
 
-	const [sharableURL, setSharableURL] = useState();
-	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
+MapButton.propTypes = {
+	showMap: PropTypes.bool,
+	onClick: PropTypes.func
+}
 
-	const [searchQuery, setSearchQuery] = useState('');
-	const [errorMessage, setErrorMessage] = useState('');
 
-	const [activeCollectionName, setActiveCollectionName] = useState('');
-	const [editingExistingCollection, setEditingExistingCollection] = useState(false);
-	const [collections, setCollections] = useState(
-		JSON.parse(localStorage.getItem('collections')) || {}
-	);
-	const [savedObjects, setSavedObjects] = useState(
-		JSON.parse(localStorage.getItem('savedObjects')) || {}
-	);
-	const [activeObject, setActiveObject] = useState(
-		Object.keys(savedObjects).length ? savedObjects[Object.keys(savedObjects)[0]] : defaultObject
-	);
-
-	const setURL = () => {
-		const ids = Object.keys(savedObjects)
-			.map(id => hashids.encode(id))
-			.join("_")
-		if (ids.length) {
-			params.set('o', ids);
-			setSharableURL(`${url.origin}?${params}`);
-		} else {
-			setSharableURL(null);
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			hours: props.hours,
+			showMap: false
 		}
-	};
 
-
-	const fetchAndSave = async objectID => {
-		const newObject = await fetchObjects(objectID);
-		const storedSavedObjects = JSON.parse(localStorage.getItem('savedObjects'));
-		let { title, primaryImageSmall } = newObject;
-		storedSavedObjects[newObject.objectID] = { title, primaryImageSmall };
-		setSavedObjects(storedSavedObjects);
-	};
-
-	const handleNewActiveObject = async objectID => {
-		document.querySelector('body').scrollIntoView({
-			behavior: 'smooth'
-		});
-		const newActiveObject = await fetchObjects(objectID);
-		setActiveObject(newActiveObject);
-	};
-
-	const handleSearch = event => {
-		searchObjects(event.target.value);
+		this.handleToggleShowMap = this.handleToggleShowMap.bind(this);
 	}
 
-	const searchObjects = async query => {
-		if (query !== searchQuery) {
-			setSearchQuery(query);
-		}
-		const request = await fetch(`${searchAPI}${query}`);
-		const response = await request.json();
-		if (response.objectIDs) {
-			setErrorMessage(null);
-			const newObject = response.objectIDs[0];
-			handleNewActiveObject(newObject);
-		} else if (query.length > 0) {
-			setErrorMessage("No objects on view match your query");
-		} else {
-			setErrorMessage(null);
-		}
-	};
+	handleToggleShowMap() {
+		this.setState(prevState => {
+			return { showMap: !prevState.showMap }
+		})
+	}
 
-	const handleSaveObject = () => {
-		const newObject = {
-			title: activeObject.title,
-			primaryImageSmall: activeObject.primaryImageSmall
-		};
+	sections() {
+		const data = [
+			{
+				heading: "What's on",
+				links: [
+					{
+						text: "Current Exhibitions",
+						url: "https://www.metmuseum.org/exhibitions"
+					},
+					{
+						text: "Events and Tours",
+						url: "https://www.metmuseum.org/events/whats-on"
+					},
+				]
+			},
 
-		const tempObjectsRef = JSON.parse(localStorage.getItem('savedObjects')) || {};
-		tempObjectsRef[activeObject.objectID] = newObject;
-		setSavedObjects(tempObjectsRef);
-	};
+			{
+				heading: "Guided experiences",
+				links: [
+					{
+						text: "Audio Guide",
+						url: "https://www.metmuseum.org/audio-guide"
+					},
+					{
+						text: "In-Gallery Guide",
+						url: "https://www.metmuseum.org/gallery-guide/afrofuturist-period-room"
+					},
+				]
+			},
 
-	const handleRemoveObject = () => {
-		const tempObjectsRef = JSON.parse(localStorage.getItem('savedObjects')) || {};
-		delete tempObjectsRef[activeObject.objectID];
-		setSavedObjects(tempObjectsRef);
-	};
+			{
+				heading: "Take a break",
+				links: [
+					{
+						text: "Gift Shop",
+						url: "https://store.metmuseum.org/"
+					},
+					{
+						text: "Dining",
+						url: "https://www.metmuseum.org/visit/dining"
+					},
+				]
+			},
 
-	const clearSavedObjects = () => {
-		setActiveCollectionName('');
-		setSavedObjects({});
-	};
+			{
+				heading: "Visit Information",
+				links: [
+					{
+						text: "Visit Guidelines",
+						url: "https://www.metmuseum.org/about-the-met/policies-and-documents/visitor-guidelines"
+					},
+					{
+						text: "Buy Tickets",
+						url: "https://engage.metmuseum.org/admission"
+					},
+				]
+			},
 
-	const handleSavedObjectChange = () => {
-		document.activeElement.blur();
+			{
+				heading: "Helpful links",
+				links: [
+					{
+						text: "Map PDF",
+						url: "https://www.metmuseum.org/welcome/-/media/d6986eb6c4354f50943aa659dac1a0f9.ashx?la=en"
+					},
+				]
+			},
+		]
 
-		if (savedObjects[activeObject.objectID]) {
-			handleRemoveObject();
-		} else {
-			handleSaveObject();
-		}
-	};
 
-	const scrollToRef = ref => {
-		ref.current.scrollIntoView({
-			block: 'start',
-			behavior: 'smooth'
-		});
-	};
+		return data.map((section, index) => {
+			return <Section {...section} key={index} />
+		})
+	}
 
-	const copyURLtoClipboard = () => {
-		navigator.clipboard.writeText(sharableURL);
-		setSharableURLCurrent(true);
-	};
-
-	const createCollection = (
-		newName = activeCollectionName,
-		objects = savedObjects
-	) => {
-		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
-		const collectionObjects = objects;
-		const newCollection = {
-			collectionObjects
-		};
-
-		tempCollectionRef[newName] = newCollection;
-		setCollections(tempCollectionRef);
-		setEditingExistingCollection(true);
-	};
-
-	const removeCollection = collectionName => {
-		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
-		delete tempCollectionRef[collectionName];
-		setCollections(tempCollectionRef);
-	};
-
-	const saveCollectionToNewName = (count = 1) => {
-		const newCollectionName = count === 1 ? 'Unnamed Collection' : `Unnamed Collection ${count}`;
-		if (newCollectionName in collections) {
-			saveCollectionToNewName(count + 1);
-		} else {
-			createCollection(newCollectionName);
-		}
-	};
-
-	const handleSelectCollection = collectionName => {
-		if (!activeCollectionName) {
-			saveCollectionToNewName();
-		}
-		const newSavedObjects = collections[collectionName].collectionObjects;
-		setActiveCollectionName(collectionName);
-		setSavedObjects(newSavedObjects);
-
-		if (Object.keys(newSavedObjects)[0]) {
-			handleNewActiveObject(Object.keys(newSavedObjects)[0]);
-		}
-	};
-
-	const handleDataFromURL = objectsFromURL => {
-		if (Object.keys(savedObjects).length) {
-			saveCollectionToNewName();
-			clearSavedObjects();
-		}
-		const arrayOfSavedObjectsFromURL = objectsFromURL.split("_").map(id => hashids.decode(id))
-
-		arrayOfSavedObjectsFromURL.forEach(objectID => {
-			fetchAndSave(objectID);
-		});
-		handleNewActiveObject(arrayOfSavedObjectsFromURL[0]);
-	};
-
-	useEffect(() => {
-		// If savedObjects doesn't exist in localStorage, create it.
-		if (localStorage.getItem('savedObjects') === null) {
-			localStorage.setItem('savedObjects', {});
-		}
-		// Also Set Collections
-		if (localStorage.getItem('collections') === null) {
-			localStorage.setItem('collections', {});
-		}
-		// If there are obects in the URL, set SavedObjects to match.
-		const objectsFromURL = params.get('o');
-		if (objectsFromURL) {
-			handleDataFromURL(objectsFromURL);
-			window.history.replaceState({}, '', `${url.origin}`);
-		} else if (Object.keys(savedObjects).length > 0) {
-			// Set Initial Object to one from the user's saved objects.
-			handleNewActiveObject(Object.keys(savedObjects)[0]);
-		}
-	}, []);
-
-	useEffect(() => {
-		const isExistingName = Object.keys(collections).some(
-			collection => collection === activeCollectionName
-		);
-		setEditingExistingCollection(isExistingName);
-	}, [activeCollectionName]);
-
-	useEffect(() => {
-		localStorage.setItem('savedObjects', JSON.stringify(savedObjects));
-		setURL();
-		setSharableURLCurrent(false);
-	}, [savedObjects]);
-
-	useEffect(() => {
-		localStorage.setItem('collections', JSON.stringify(collections));
-	}, [collections]);
-
-	return (
-		<div className="object-search-app">
-			<main className="main__section" ref={objectSearchRef}>
-				<OfflineNotification />
-				<div className="main__title-bar">
-					<a
-						tabIndex="0"
-						className="main__title-link"
-						onClick={() => scrollToRef(objectSearchRef)}
-						onKeyDown={e => e.key === 'Enter' && scrollToRef(objectSearchRef)}
-						role="button">
-						<h1 className="main-title">Object Look Up</h1>
-					</a>
-				</div>
-				<div className="object-search__section">
-					<div className="object-search__inputs">
-						<SearchInput
-							value={searchQuery}
-							onChange={handleSearch}
-						/>
-						<span>or</span>
-						<ImageInput searchObjects={searchObjects} />
+	render() {
+		return (
+			<main className="welcome-page-container" style={this.state.showMap ? {background: "rgb(51,51,51)"} : {}}>
+				<MapButton showMap={this.state.showMap} onClick={this.handleToggleShowMap}/>
+				{this.state.showMap && <iframe src="https://maps.metmuseum.org/" title="met museum map" style={{width: '100%', height: '80vh', marginTop: '10vh'}}></iframe>}
+				{!this.state.showMap && <div>
+					<header className="welcome-header">
+						<h2>Welcome to The Met</h2>
+						<p><b>Today&apos;s hours: {this.state.hours.Closed ? "Closed" : `${this.state.hours.OpeningTime} -- ${this.state.hours.ClosingTime}`}</b></p>
+					</header>
+					<div className="welcome-links-container">
+						{this.sections()}
 					</div>
-					{errorMessage ?
-						<div>
-							{errorMessage}
-						</div> :
-						<ActiveObject
-							savedObjects={savedObjects}
-							object={activeObject}
-							handleSavedObjectChange={handleSavedObjectChange}
-						/>
-					}
-				</div>
-			</main>
-			<section className="sidebar">
-				<div className="sidebar__title">
-					<h1 className="saved-objects__header">
-						<a
-							tabIndex="0"
-							className="sidebar__title-link"
-							onClick={() => scrollToRef(objectsGridRef)}
-							onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
-							role="button">
-							Saved Objects
-						</a>
-					</h1>
-					{Object.keys(savedObjects).length !== 0 && (
-						<button
-							type="button"
-							className="saved-objects__copy-link"
-							onKeyDown={e => e.key === 'Enter' && clearSavedObjects}
-							onClick={clearSavedObjects}>
-							Clear Objects
-						</button>
-					)}
-				</div>
-				<div className="sidebar__section">
-					<div className="collections__save-bar">
-						<input
-							className="collection-input"
-							key="activeCollectionNameBar"
-							placeholder="Collection Name"
-							value={activeCollectionName}
-							onKeyDown={e => e.key === 'Enter' && createCollection()}
-							onChange={event => setActiveCollectionName(event.target.value)}
-						/>
-						<button
-							type="button"
-							className="button button--secondary collections__save-button"
-							onClick={() => createCollection()}
-							onKeyDown={e => e.key === 'Enter' && createCollection()}>
-							{editingExistingCollection
-								? 'Update Collection'
-								: 'Save Collection'}
-						</button>
-					</div>
-					<div className="saved-objects__grid" ref={objectsGridRef}>
-						{Object.keys(savedObjects).map(savedObject => {
-							return (
-								<SavedObject
-									key={savedObject}
-									objectNumber={savedObject}
-									handleNewActiveObject={handleNewActiveObject}
-									objectTitle={savedObjects[savedObject].title}
-									primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
-								/>
-							);
-						})}
-					</div>
-				</div>
-				<div className="sidebar__title sidebar__title--collections">
-					<h1 className="saved-objects__header">
-						<a
-							tabIndex="0"
-							className="sidebar__title-link"
-							onClick={() => scrollToRef(collectionsRef)}
-							onKeyDown={e => e.key === 'Enter' && scrollToRef(collectionsRef)}
-							role="button">
-							Collections
-						</a>
-					</h1>
-					{sharableURL && (
-						<button
-							type="button"
-							className="saved-objects__copy-link"
-							onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
-							onClick={copyURLtoClipboard}>
-							{sharableURLCurrent ? 'Copied!' : 'Copy Collection Link'}
-						</button>
-					)}
-				</div>
-				<div className="sidebar__section">
-					<div ref={collectionsRef}>
-						<div>
-							<ul className="collection-items">
-								{Object.keys(collections).map(collection => {
-									return (
-										<CollectionItem
-											key={collection}
-											removeCollection={removeCollection}
-											handleSelectCollection={handleSelectCollection}
-											collectionLength={Object.keys(collections[collection].collectionObjects).length}
-											collectionName={collection}
-										/>
-									);
-								})}
-							</ul>
-						</div>
-					</div>
-				</div>
-			</section>
-		</div>
-	);
-};
+				</div>}
+			</main>)
+	}
+}
 
 export default App;
+
+App.propTypes = {
+	hours: PropTypes.object
+}

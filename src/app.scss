@@ -1,178 +1,50 @@
-@use "~@metmuseum/marble/src/base/base";
-@use "variables.scss" as vars;
-@import "./fonts/font-declarations.scss";
-@import "./components/active-object/active-object";
-@import "./components/saved-object/saved-object";
-@import "./components/collection-item/collection-item";
-@import "./components/image-input/image-input";
-@import "./components/sidebar/sidebar";
+@import "~@metmuseum/marble";
+@import "~@metmuseum/marble/src/base/base";
 
-* {
-	box-sizing: border-box;
+#app {
+	position: relative;
+	height: 100%;
+	/* Rectangle 75 */
+
 }
 
-body {
-	@include typography-body-long();
-	-webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-	padding: 0;
-	margin: 0;
+.welcome-page-container {
+	min-height: 100vh;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), linear-gradient(171.54deg, #CE0058 28.49%, #FE8800 100%);
+	color: $color-white;
+}
+.welcome-header {
+	padding: $spacing-xs;
+	padding-bottom: 0;
+	max-width: calc(100vw - (58px + ($spacing-xs * 2)))
 }
 
-a {
-	color: inherit;
-	&:visited,
-	&:hover {
-		color: inherit;
-	}
-}
-
-h1, h2, h3, h4 {
-	margin: 0 0 0.5em;
-}
-
-h1 {
-	@include typography-h2();
-	margin: 0;
-}
-
-.button {
-	@include button-base();
-	height: 40px;
-	line-height: 0;
-	min-width: 100px;
-	white-space: nowrap;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0 $spacing-xxs;
-}
-
-.button--primary{
-	@include primary-button();
-	@include primary-button--filled();
-}
-
-.button--ghost {
-	@include primary-button();
-	@include primary-button--ghost-dark();
-}
-
-.button--secondary {
-	@include secondary-button();
-	@include secondary-button--ghost-dark();
-}
-
-.button--tertiary {
-	@include tertiary-button();
-	align-self: center;
-}
-
-.object-search-app {
+.welcome-links-container {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
-	@media (orientation: landscape) {
-		flex-direction: row;
-	}
+	margin: 0 $spacing-component-margin;
+	padding: $spacing-xs 0;
 }
 
-.object-search__inputs {
-	align-items: center;
+.welcome-links-section {
 	display: flex;
-	grid-column-gap: $spacing-micro;
-	margin-bottom: $spacing-xxs;
+	flex-direction: column;
+	margin: $spacing-micro 0;
 }
 
-.main__section {
-	overflow: hidden;
-	width: 100%;
+.welcome-link {
+	display: block;
+	margin: $spacing-micro 0;
 }
 
-.main__title-link {
+
+.map-svg-container {
 	cursor: pointer;
-}
-
-.main__title-bar {
-	padding: $spacing-xxs $spacing-component-margin;
-	height: vars.$sidebar-title-height;
-	align-items: center;
-	background-color: $color-white-opaque-90;
-	top: 0;
-	display: flex;
-	flex-wrap: wrap;
 	position: fixed;
-	backdrop-filter: blur(2px);
-	box-shadow: $shadow-passive;
-	left: 0;
+	top: 0;
 	right: 0;
-	z-index: 99;
-	@media (orientation: landscape) {
-		box-shadow: none;
-		position: relative;
-	}
+	margin: $spacing-xs;
+	width: 58px;
+	height: 58px;
+	z-index: 999;
 }
-
-.main-title {
-	font-size: $textsize-l;
-}
-
-.object-search__section {
-	padding: $spacing-l $spacing-component-margin;
-	position: sticky;
-	top: 0;
-	overflow: scroll;
-	@media (orientation: landscape) {
-		padding-top: $spacing-xxs;
-		position: relative;
-		height: auto;
-		overflow: auto;
-	}
-}
-
-
-
-.saved-objects__header {
-	@include typography-h3();
-	margin: 0;
-}
-
-.saved-objects__grid {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	column-gap: 16px;
-	row-gap: $spacing-micro;
-	position: sticky;
-	top: 0;
-}
-
-.saved-objects__copy-link {
-	@include button-reset();
-	@include typography-link();
-	align-self: center;
-}
-
-.collections__save-bar {
-	display: flex;
-	grid-column-gap: $spacing-micro;
-	grid-row-gap: $spacing-micro;
-}
-
-.collection-input {
-	flex-shrink: 1;
-	flex-grow: 1;
-	min-width: 0;
-	padding: $spacing-micro;
-	border-radius: 20px;
-	margin-bottom: $spacing-xxs;
-}
-
-.collections__save-button {
-	min-width: 140px;
-}
-
-.collection-items {
-	list-style: none;
-	padding-left: 0;
-}
-
