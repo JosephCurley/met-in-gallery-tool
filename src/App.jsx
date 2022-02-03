@@ -48,6 +48,17 @@ class App extends React.Component {
 		})
 	}
 
+	formatHours() {
+		// todo: this is so bad. but until OmegaStar get their fucking shit together and support ISO timestamps...
+		const open = this.state.hours.OpeningTime.split(":").filter(section => section != "00")
+		const close = this.state.hours.ClosingTime.split(":").filter(section => section != "00")
+		let closingHour = close[0];
+		if (closingHour > 12) {
+			close[0] = closingHour - 12;
+		}
+		return `${open.join(":")}AM — ${close.join(":")}PM`
+	}
+
 	sections() {
 		const data = [
 			{
@@ -131,7 +142,7 @@ class App extends React.Component {
 				{!this.state.showMap && <div>
 					<header className="welcome-header">
 						<h2>Welcome to The Met</h2>
-						<p><b>Today&apos;s hours: {this.state.hours.Closed ? "Closed" : `${this.state.hours.OpeningTime} -- ${this.state.hours.ClosingTime}`}</b></p>
+						<p><b>Today&apos;s hours: {this.state.hours.Closed ? "Closed" : this.formatHours()}</b></p>
 					</header>
 					<div className="welcome-links-container">
 						{this.sections()}
