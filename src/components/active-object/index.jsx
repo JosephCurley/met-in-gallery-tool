@@ -8,10 +8,10 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 				<div className="active-object__titles">
 					<h1
 						className="active-object__header"
-						dangerouslySetInnerHTML={{ __html: object.titles.primaryTitle }}
+						dangerouslySetInnerHTML={{ __html: object.titles?.primaryTitle}}
 					/>
 					<h2 className="active-object__artist">
-						{object.artistMaker.artistMaker}
+						{object.facetInfo?.artistMaker?.length && object.facetInfo?.artistMaker[0].name.split(`$`)[1]}
 					</h2>
 				</div>
 				<div className="active-object__buttons">
@@ -41,45 +41,40 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 					</a>
 				</div>
 			</div>
-			{(object.primaryImageSmall && object.additionalImages?.length) ? (
+			{(object.media?.images?.primaryImage && object.media?.images?.additionalImages?.length) ? (
 				<div className="active-object__image-container">
 					<div className="active-object__images" draggable="true">
 						<img
-
-							src={object.primaryImageSmall}
+							src={object.media?.images?.primaryImage?.webImageUrl}
 							className="active-object__image active-object__image--multiple"
-							alt={object.objectName}
+							alt={object.media?.images?.primaryImage?.altText}
 						/>
-						{object.additionalImages.map(additionalImage => {
-							const smallImage = additionalImage.replace(
-								'original',
-								'web-large'
-							);
+						{object.media?.images?.additionalImages.map(additionalImage => {
 							return (
 								<img
-									key={smallImage}
-									src={smallImage}
+									key={additionalImage.webImageUrl}
+									src={additionalImage.webImageUrl}
 									loading="lazy"
 									className="active-object__image active-object__image--multiple"
-									alt={object.objectName}
+									alt={additionalImage.altText}
 								/>
 							);
 						})}
 					</div>
 				</div>
 			) : ""}
-			{object.primaryImageSmall && !object.additionalImages?.length ? (
+			{object.media?.images?.primaryImage && !object.media?.images?.additionalImages?.length ? (
 				<img
-					src={object.primaryImageSmall}
+					src={object.media?.images?.primaryImage?.webImageUrl}
 					className="active-object__image"
-					alt={object.objectName}
+					alt={object.media?.images?.primaryImage?.altText}
 				/>
 			) : ""}
-			{!object.primaryImageSmall ? (
+			{!object.media?.images?.primaryImage ? (
 				<div className="active-object__no-image">
 					<span>Due to rights restrictions this image can only be viewed on our </span>
 					<a
-						href={object.objectURL}
+						href={object.object.media?.images?.primaryImage?.objectURL}
 						target="_blank"
 						rel="noreferrer"
 						className="active-object__link">
@@ -88,13 +83,6 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 				</div>
 			) : "" }
 			<div>
-				<div className="active-object__info">
-					<span className="active-object__key">Name: </span>
-					<span
-						className="active-object__value"
-						dangerouslySetInnerHTML={{ __html: object.objectName }}
-					/>
-				</div>
 				{object.artistRole && object.artistDisplayName && (
 					<div className="active-object__info">
 						<span className="active-object__key">{object.artistRole}: </span>
@@ -103,25 +91,14 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 						</span>
 					</div>
 				)}
-				<div className="active-object__info">
-					<span className="active-object__key">Department: </span>
-					<span className="active-object__value">{object.department}</span>
-				</div>
-
-				<div className="active-object__info">
-					<span className="active-object__key">Medium: </span>
-					<span className="active-object__value">{object.medium}</span>
-				</div>
-
-				<div className="active-object__info">
-					<span className="active-object__key">Accession Number: </span>
-					<span className="active-object__value">{object.accessionNumber}</span>
-				</div>
-
-				<div className="active-object__info">
-					<span className="active-object__key">Accession Year: </span>
-					<span className="active-object__value">{object.accessionYear}</span>
-				</div>
+				{object.tombstone.map(tombstone => {
+					return (
+						<div className="active-object__info" key={tombstone.label}>
+							<span className="active-object__key">{tombstone.label}</span>
+							<span className="active-object__value"> {tombstone.text}</span>
+						</div>
+					)
+				})}
 			</div>
 
 			{object.primaryImage ? (<div className="active-object__info">
