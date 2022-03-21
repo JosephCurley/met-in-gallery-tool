@@ -8,14 +8,10 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 				<div className="active-object__titles">
 					<h1
 						className="active-object__header"
-						dangerouslySetInnerHTML={{ __html: object.title }}
+						dangerouslySetInnerHTML={{ __html: object.titles.primaryTitle }}
 					/>
-					<h2 className="active-object__artist">{object.artistDisplayName}
-						{object.artistDisplayBio && (
-							<span className="active-object__display-bio">
-								({object.artistDisplayBio})
-							</span>
-						)}
+					<h2 className="active-object__artist">
+						{object.artistMaker.artistMaker}
 					</h2>
 				</div>
 				<div className="active-object__buttons">
