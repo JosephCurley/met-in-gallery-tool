@@ -1,11 +1,12 @@
 @use "~@metmuseum/marble/src/base/base";
-@use "variables.scss" as vars;
+@use "variables" as vars;
 @import "./fonts/font-declarations.scss";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
 @import "./components/collection-item/collection-item";
 @import "./components/image-input/image-input";
 @import "./components/sidebar/sidebar";
+@import "./components/landing-page/landing-page";
 
 * {
 	box-sizing: border-box;
@@ -14,20 +15,24 @@
 body {
 	@include typography-body-long();
 	-webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-	padding: 0;
+	-moz-osx-font-smoothing: grayscale;
 	margin: 0;
+	padding: 0;
 }
 
 a {
 	color: inherit;
+
 	&:visited,
 	&:hover {
 		color: inherit;
 	}
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
 	margin: 0 0 0.5em;
 }
 
@@ -42,17 +47,17 @@ h2 {
 
 .button {
 	@include button-base();
+	align-items: center;
+	display: flex;
 	height: 40px;
+	justify-content: center;
 	line-height: 0;
 	min-width: 100px;
-	white-space: nowrap;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	padding: 0 $spacing-xxs;
+	white-space: nowrap;
 }
 
-.button--primary{
+.button--primary {
 	@include primary-button();
 	@include primary-button--filled();
 }
@@ -98,18 +103,18 @@ h2 {
 }
 
 .main__title-bar {
-	padding: $spacing-xxs $spacing-component-margin;
-	height: vars.$sidebar-title-height;
 	align-items: center;
+	backdrop-filter: blur(2px);
 	background-color: $color-white-opaque-90;
-	top: 0;
+	box-shadow: $shadow-passive;
 	display: flex;
 	flex-wrap: wrap;
-	position: fixed;
-	backdrop-filter: blur(2px);
-	box-shadow: $shadow-passive;
+	height: vars.$sidebar-title-height;
 	left: 0;
+	padding: $spacing-xxs $spacing-component-margin;
+	position: fixed;
 	right: 0;
+	top: 0;
 	z-index: 99;
 	@media (orientation: landscape) {
 		box-shadow: none;
@@ -122,15 +127,15 @@ h2 {
 }
 
 .object-search__section {
+	overflow: scroll;
 	padding: $spacing-l $spacing-component-margin;
 	position: sticky;
 	top: 0;
-	overflow: scroll;
 	@media (orientation: landscape) {
-		padding-top: $spacing-xxs;
-		position: relative;
 		height: auto;
 		overflow: auto;
+		padding-top: $spacing-xxs;
+		position: relative;
 	}
 }
 
@@ -142,11 +147,11 @@ h2 {
 }
 
 .saved-objects__grid {
+	column-gap: 16px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	column-gap: 16px;
-	row-gap: $spacing-micro;
 	position: sticky;
+	row-gap: $spacing-micro;
 	top: 0;
 }
 
@@ -163,12 +168,12 @@ h2 {
 }
 
 .collection-input {
-	flex-shrink: 1;
+	border-radius: 20px;
 	flex-grow: 1;
+	flex-shrink: 1;
+	margin-bottom: $spacing-xxs;
 	min-width: 0;
 	padding: $spacing-micro;
-	border-radius: 20px;
-	margin-bottom: $spacing-xxs;
 }
 
 .collections__save-button {

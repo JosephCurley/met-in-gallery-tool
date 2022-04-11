@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ActiveObject from './components/active-object';
+import LandingPage from './components/landing-page'
 import SavedObject from './components/saved-object';
 import CollectionItem from './components/collection-item';
 import ImageInput from './components/image-input';
-import defaultObject from './helpers/defaultObjectModel';
 import SearchInput from "./components/search-input";
 import OfflineNotification from "./components/offline-notification";
 import { searchAPI, fetchObjects } from "./helpers/api";
@@ -37,7 +37,7 @@ const App = () => {
 		JSON.parse(localStorage.getItem('savedObjects')) || {}
 	);
 	const [activeObject, setActiveObject] = useState(
-		Object.keys(savedObjects).length ? savedObjects[Object.keys(savedObjects)[0]] : defaultObject
+		Object.keys(savedObjects).length ? savedObjects[Object.keys(savedObjects)[0]] : null
 	);
 	//Create a string of hashed object IDs and append to an URL for bookmarking and linking.
 	const setURL = () => {
@@ -89,7 +89,12 @@ const App = () => {
 		} else if (query.length > 0) {
 			setErrorMessage("No objects on view match your query");
 		} else {
+			setActiveObject(null);
 			setErrorMessage(null);
+			const newParams = new URLSearchParams();
+			newParams.delete("object");
+			const newRelativePathQuery = window.location.pathname + '?' + newParams.toString();
+			history.replaceState(null, '', newRelativePathQuery);
 		}
 	};
 
@@ -113,13 +118,13 @@ const App = () => {
 		};
 
 		const tempObjectsRef = JSON.parse(localStorage.getItem('savedObjects')) || {};
-		tempObjectsRef[activeObject.objectID] = newObject;
+		tempObjectsRef[activeObject?.objectID] = newObject;
 		setSavedObjects(tempObjectsRef);
 	};
 
 	const handleRemoveObject = () => {
 		const tempObjectsRef = JSON.parse(localStorage.getItem('savedObjects')) || {};
-		delete tempObjectsRef[activeObject.objectID];
+		delete tempObjectsRef[activeObject?.objectID];
 		setSavedObjects(tempObjectsRef);
 	};
 
@@ -246,13 +251,13 @@ const App = () => {
 	}, [activeCollectionName]);
 
 	useEffect(() => {
-		if(activeObject.objectID) {
+		if(activeObject?.objectID) {
 			const newParams = new URLSearchParams();
 			newParams.set("object", activeObject.objectID);
 			const newRelativePathQuery = window.location.pathname + '?' + newParams.toString();
 			history.replaceState(null, '', newRelativePathQuery);
 		}
-	}, [activeObject.objectID]);
+	}, [activeObject?.objectID]);
 
 	useEffect(() => {
 		localStorage.setItem('savedObjects', JSON.stringify(savedObjects));
@@ -290,12 +295,16 @@ const App = () => {
 					{errorMessage ?
 						<div>
 							{errorMessage}
-						</div> :
-						<ActiveObject
-							savedObjects={savedObjects}
-							object={activeObject}
-							handleSavedObjectChange={handleSavedObjectChange}
-						/>
+						</div> : activeObject ?
+							(
+								<ActiveObject
+									savedObjects={savedObjects}
+									object={activeObject}
+									handleSavedObjectChange={handleSavedObjectChange}
+								/>
+							) : (
+								<LandingPage/>
+							)
 					}
 				</div>
 			</main>

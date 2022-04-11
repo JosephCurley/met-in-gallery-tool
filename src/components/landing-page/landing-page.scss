@@ -1,0 +1,13 @@
+.landing-page__title {
+	margin-bottom: 0.25em;
+	margin-top: 0.5em;
+}
+
+.landing-page__paragraph {
+	margin: 0 0 0.25em;
+
+	&.landing-page__paragraph--warning {
+		color: $color-red-error;
+		font-weight: 600;
+	}
+}
