@@ -25,6 +25,7 @@ const App = () => {
 	const [sharableURLCurrent, setSharableURLCurrent] = useState(false);
 
 	const [searchQuery, setSearchQuery] = useState('');
+	const [isSearching, setIsSearching] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
 	const [activeCollectionName, setActiveCollectionName] = useState('');
@@ -38,7 +39,7 @@ const App = () => {
 	const [activeObject, setActiveObject] = useState(
 		Object.keys(savedObjects).length ? savedObjects[Object.keys(savedObjects)[0]] : defaultObject
 	);
-
+	//Create a string of hashed object IDs and append to an URL for bookmarking and linking.
 	const setURL = () => {
 		const ids = Object.keys(savedObjects)
 			.map(id => hashids.encode(id))
@@ -51,7 +52,7 @@ const App = () => {
 		}
 	};
 
-
+	//Fetch an object and immediatelly add it to the current colleciton.
 	const fetchAndSave = async objectID => {
 		const newObject = await fetchObjects(objectID);
 		const storedSavedObjects = JSON.parse(localStorage.getItem('savedObjects'));
@@ -72,6 +73,7 @@ const App = () => {
 		searchObjects(event.target.value);
 	}
 
+	//Immediatelly cancel other searches and look up an object. Return the result with the highest relevance.
 	const callSearchAPI = async query => {
 		abortController && abortController.abort();
 		abortController = new AbortController();
@@ -91,13 +93,16 @@ const App = () => {
 		}
 	};
 
+	//Try Catch wrapper for object search.
 	const searchObjects = async query => {
 		try {
+			setIsSearching(true);
 			await callSearchAPI(query);
 		} catch (e) {
 			console.warn(e);
 		} finally {
 			abortController = null;
+			setIsSearching(false);
 		}
 	}
 
@@ -200,6 +205,12 @@ const App = () => {
 		});
 	};
 
+	const appClasses = () => {
+		const classArry = ["object-search-app",
+			isSearching ? "is-searching" : ""];
+		return classArry.join(" ");
+	}
+
 	useEffect(() => {
 		// If savedObjects doesn't exist in localStorage, create it.
 		if (localStorage.getItem('savedObjects') === null) {
@@ -254,7 +265,7 @@ const App = () => {
 	}, [collections]);
 
 	return (
-		<div className="object-search-app">
+		<div className={appClasses()}>
 			<main className="main__section" ref={objectSearchRef}>
 				<OfflineNotification />
 				<div className="main__title-bar">

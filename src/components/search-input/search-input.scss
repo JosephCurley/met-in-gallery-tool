@@ -1,6 +1,9 @@
 @use "~@metmuseum/marble/src/base/base";
 
 .object-search__input {
+	background: linear-gradient(-45deg, base.$color-green-good-news-400, base.$color-green-good-news-600, base.$color-white, base.$color-white);
+	background-position: 25% 50%;
+	background-size: 400% 400%;
 	border: 2px solid base.$color-black;
 	border-radius: 50px;
 	box-sizing: border-box;
@@ -10,7 +13,29 @@
 	padding: base.$spacing-micro;
 
 	&:focus {
+		box-shadow: 0 0 10px base.$color-grey-500;
+		color: currentColor;
 		outline: none;
-		box-shadow: 0px 0px 10px base.$color-grey-500;
+		outline-color: base.$color-focus-state;
+	}
+
+	.is-searching & {
+		animation: gradient 5s linear infinite;
 	}
 }
+
+
+@keyframes gradient {
+	0% {
+		background-position: 25% 50%;
+	}
+
+	50% {
+		background-position: 100% 50%;
+	}
+
+	100% {
+		background-position: 25% 50%;
+	}
+}
+
