@@ -187,8 +187,12 @@ const App = () => {
 		}
 	};
 
+	const handleSaveCollection = () => {
+		activeCollectionName ? createCollection() : saveCollectionToNewName();
+	}
+
 	const handleSelectCollection = collectionName => {
-		if (!activeCollectionName) {
+		if (!activeCollectionName && Object.keys(savedObjects).length !== 0) {
 			saveCollectionToNewName();
 		}
 		const newSavedObjects = collections[collectionName].collectionObjects;
@@ -348,26 +352,33 @@ const App = () => {
 						<button
 							type="button"
 							className="button button--secondary collections__save-button"
-							onClick={() => createCollection()}
-							onKeyDown={e => e.key === 'Enter' && createCollection()}>
-							{editingExistingCollection
+							onClick={() => handleSaveCollection()}
+							onKeyDown={e => e.key === 'Enter' && handleSaveCollection()}>
+							{editingExistingCollection && activeCollectionName
 								? 'Update Collection'
 								: 'Save Collection'}
 						</button>
 					</div>
-					<div className="saved-objects__grid" ref={objectsGridRef}>
-						{Object.keys(savedObjects).map(savedObject => {
-							return (
-								<SavedObject
-									key={savedObject}
-									objectNumber={savedObject}
-									handleNewActiveObject={handleNewActiveObject}
-									objectTitle={savedObjects[savedObject].title}
-									primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
-								/>
-							);
-						})}
-					</div>
+					{Object.keys(savedObjects).length !== 0 ? (
+						<div className="saved-objects__grid" ref={objectsGridRef}>
+							{Object.keys(savedObjects).map(savedObject => {
+								return (
+									<SavedObject
+										key={savedObject}
+										objectNumber={savedObject}
+										handleNewActiveObject={handleNewActiveObject}
+										objectTitle={savedObjects[savedObject].title}
+										primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
+									/>
+								);
+							})}
+						</div>
+					) : (
+						<div>
+							<h4>Your current collection is empty.</h4>
+							<p>As you save objects they will be displayed here.</p>
+						</div>
+					)}
 				</div>
 				<div className="sidebar__title sidebar__title--collections">
 					<h1 className="saved-objects__header">
@@ -384,20 +395,28 @@ const App = () => {
 				<div className="sidebar__section">
 					<div ref={collectionsRef}>
 						<div>
-							<ul className="collection-items">
-								{Object.keys(collections).map(collection => {
-									return (
-										<CollectionItem
-											key={collection}
-											removeCollection={removeCollection}
-											handleSelectCollection={handleSelectCollection}
-											collectionLength={Object.keys(collections[collection].collectionObjects).length}
-											collectionURL={collections[collection].collectionURL}
-											collectionName={collection}
-										/>
-									);
-								})}
-							</ul>
+							{Object.keys(collections).length !== 0 ? (
+								<ul className="collection-items">
+									{Object.keys(collections).map(collection => {
+										return (
+											<CollectionItem
+												key={collection}
+												removeCollection={removeCollection}
+												handleSelectCollection={handleSelectCollection}
+												collectionLength={Object.keys(collections[collection].collectionObjects).length}
+												collectionURL={collections[collection].collectionURL}
+												collectionName={collection}
+											/>
+										);
+									})}
+								</ul>
+							) : (
+								<div>
+									<h4>You currently don&apos;t have any saved collections</h4>
+									<p>Collections are groups of saved objects.
+										Saving Items to collections allows you to easily share them via links.</p>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
