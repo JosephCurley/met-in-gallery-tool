@@ -1,5 +1,6 @@
 .collection-item {
-	margin-bottom: $spacing-micro;
+	display: flex;
+	margin-bottom: $spacing-xxs;
 	white-space: nowrap;
 }
 
@@ -7,16 +8,54 @@
 	@include button-reset();
 	@include typography-link();
 	align-self: center;
+	border-bottom: 0;
 	margin-right: $spacing-micro;
+	width: 40%;
+	overflow: hidden;
+	text-align: left;
+	white-space: normal;
+
+	&:hover,
+	&:focus {
+		&:after {
+			content: none;
+		}
+	}
 }
 
 .collection-item__title {
 	margin-right: $spacing-micro;
+	text-decoration: underline;
+
+	.collection-item__button:focus &,
+	.collection-item__button:hover & {
+		text-decoration: none;
+	}
+}
+
+.collection-item__count {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.collection-item__bookmark {
+	@include button-reset();
+	align-self: center;
+	font-weight: 600;
+	margin-right: $spacing-micro;
+	padding: 2px;
+	
+	&:hover,
+	&:focus {
+		background-color: $color-grey-200;
+	}
 }
 
 .collection-item__button-remove {
 	@include button-reset();
 	align-self: center;
+	font-weight: 600;
+	margin-left: auto;
 	transition: opacity 0.2s;
 
 	&:hover,

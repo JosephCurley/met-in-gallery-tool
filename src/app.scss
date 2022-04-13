@@ -1,6 +1,6 @@
 @use "~@metmuseum/marble/src/base/base";
 @use "variables" as vars;
-@import "./fonts/font-declarations.scss";
+@import "./fonts/font-declarations";
 @import "./components/active-object/active-object";
 @import "./components/saved-object/saved-object";
 @import "./components/collection-item/collection-item";
@@ -168,12 +168,19 @@ h2 {
 }
 
 .collection-input {
+	background-color: $color-grey-050;
+	border: 0;
 	border-radius: 20px;
 	flex-grow: 1;
 	flex-shrink: 1;
 	margin-bottom: $spacing-xxs;
 	min-width: 0;
 	padding: $spacing-micro;
+
+	&:hover,
+	&:focus {
+		background-color: $color-grey-100;
+	}
 }
 
 .collections__save-button {
