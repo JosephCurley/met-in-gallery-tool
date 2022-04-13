@@ -168,6 +168,8 @@ const App = () => {
 		};
 		setCollections(prevData => ({...prevData, ...{[newName]: newCollection}}));
 		setEditingExistingCollection(true);
+		clearSavedObjects();
+		scrollToRef(collectionsRef);
 	};
 
 	const removeCollection = collectionName => {
