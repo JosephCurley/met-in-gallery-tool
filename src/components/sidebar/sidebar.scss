@@ -17,7 +17,7 @@
 }
 
 .sidebar__copy-link {
-	margin-bottom: $spacing-xxs;
+	flex-shrink: 0;
 }
 
 .sidebar__section {
@@ -37,7 +37,7 @@
 	background-color: $color-white-opaque-90;
 	box-shadow: $shadow-passive;
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	grid-column-gap: $spacing-xxs;
 	grid-row-gap: $spacing-xxs;
 	justify-content: space-between;
@@ -63,4 +63,7 @@
 	@include button-base();
 	@include tertiary-button();
 	align-self: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

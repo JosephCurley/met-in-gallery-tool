@@ -179,7 +179,7 @@ const App = () => {
 	};
 
 	const saveCollectionToNewName = (count = 1) => {
-		const newCollectionName = count === 1 ? 'Unnamed Collection' : `Unnamed Collection ${count}`;
+		const newCollectionName = count === 1 ? 'Saved Objects' : `Saved Objects ${count}`;
 		if (newCollectionName in collections) {
 			saveCollectionToNewName(count + 1);
 		} else {
@@ -320,17 +320,19 @@ const App = () => {
 							onClick={() => scrollToRef(objectsGridRef)}
 							onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
 							role="button">
-							Saved Objects
+							{activeCollectionName ? activeCollectionName : `Saved Objects`}
 						</a>
 					</h1>
-					{Object.keys(savedObjects).length !== 0 && (
-						<button
-							type="button"
-							className="saved-objects__copy-link"
-							onKeyDown={e => e.key === 'Enter' && clearSavedObjects}
-							onClick={clearSavedObjects}>
-							Clear Objects
-						</button>
+					{activeURL && (
+						<div className="sidebar__copy-link">
+							<button
+								type="button"
+								className="saved-objects__copy-link"
+								onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
+								onClick={copyURLtoClipboard}>
+								{activeURLCurrent ? 'Copied!' : 'Copy Sharable Collection Link'}
+							</button>
+						</div>
 					)}
 				</div>
 				<div className="sidebar__section">
@@ -353,17 +355,6 @@ const App = () => {
 								: 'Save Collection'}
 						</button>
 					</div>
-					{activeURL && (
-						<div className="sidebar__copy-link">
-							<button
-								type="button"
-								className="saved-objects__copy-link"
-								onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
-								onClick={copyURLtoClipboard}>
-								{activeURLCurrent ? 'Copied!' : 'Copy Sharable Collection Link'}
-							</button>
-						</div>
-					)}
 					<div className="saved-objects__grid" ref={objectsGridRef}>
 						{Object.keys(savedObjects).map(savedObject => {
 							return (

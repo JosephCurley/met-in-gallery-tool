@@ -144,6 +144,8 @@ h2 {
 .saved-objects__header {
 	@include typography-h3();
 	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .saved-objects__grid {
