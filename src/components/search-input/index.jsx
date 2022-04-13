@@ -8,7 +8,7 @@ const SearchInput = props => (
 		className="object-search__input"
 		key="objectSearchBar"
 		placeholder="Search Objects"
-		debounceTimeout={300}
+		debounceTimeout={600}
 		type="search"
 		{...props}
 	/>);
