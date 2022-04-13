@@ -45,7 +45,8 @@ const App = () => {
 			.map(id => hashids.encode(id))
 			.join("_")
 		if (ids.length) {
-			params.set('o', ids);
+			const newParams = new URLSearchParams();
+			newParams.set('o', ids);
 			return `${url.origin}?${params}`;
 		} else {
 			return null;
@@ -159,16 +160,13 @@ const App = () => {
 		newName = activeCollectionName,
 		objects = savedObjects,
 	) => {
-		const tempCollectionRef = JSON.parse(localStorage.getItem('collections'));
 		const collectionObjects = objects;
 		const collectionURL = setURL();
 		const newCollection = {
 			collectionObjects,
 			collectionURL
 		};
-
-		tempCollectionRef[newName] = newCollection;
-		setCollections(tempCollectionRef);
+		setCollections(prevData => ({...prevData, ...{[newName]: newCollection}}));
 		setEditingExistingCollection(true);
 	};
 
