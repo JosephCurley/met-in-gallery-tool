@@ -47,7 +47,7 @@ const App = () => {
 		if (ids.length) {
 			const newParams = new URLSearchParams();
 			newParams.set('o', ids);
-			return `${url.origin}?${params}`;
+			return `${url.origin}?${newParams}`;
 		} else {
 			return null;
 		}
@@ -267,6 +267,7 @@ const App = () => {
 
 	useEffect(() => {
 		localStorage.setItem('collections', JSON.stringify(collections));
+		console.log(collections);
 	}, [collections]);
 
 	return (
@@ -398,6 +399,7 @@ const App = () => {
 											removeCollection={removeCollection}
 											handleSelectCollection={handleSelectCollection}
 											collectionLength={Object.keys(collections[collection].collectionObjects).length}
+											collectionURL={collections[collection].collectionURL}
 											collectionName={collection}
 										/>
 									);

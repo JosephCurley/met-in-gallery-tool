@@ -10,14 +10,14 @@
 	align-self: center;
 	border-bottom: 0;
 	margin-right: $spacing-micro;
-	width: 40%;
 	overflow: hidden;
 	text-align: left;
 	white-space: normal;
+	width: 40%;
 
 	&:hover,
 	&:focus {
-		&:after {
+		&::after {
 			content: none;
 		}
 	}
@@ -38,20 +38,7 @@
 	white-space: nowrap;
 }
 
-.collection-item__bookmark {
-	@include button-reset();
-	align-self: center;
-	font-weight: 600;
-	margin-right: $spacing-micro;
-	padding: 2px;
-	
-	&:hover,
-	&:focus {
-		background-color: $color-grey-200;
-	}
-}
-
-.collection-item__button-remove {
+.collection-item__button--secondary {
 	@include button-reset();
 	align-self: center;
 	font-weight: 600;
@@ -60,6 +47,16 @@
 
 	&:hover,
 	&:active {
-		opacity: 0.2;
+		color: $color-purple;
 	}
+}
+
+.collection-item__bookmark {
+	margin-right: $spacing-micro;
+	padding: 2px;
+	position: relative;
+}
+
+.collection-item__button-remove {
+	margin-left: auto;
 }
