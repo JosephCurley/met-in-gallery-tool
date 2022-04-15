@@ -9,13 +9,7 @@
     "indentation": "tab",
     "selector-class-pattern": null,
     "order/properties-alphabetical-order": true,
-    "plugin/no-unsupported-browser-features": [
-      false,
-      {
-        "severity": "warning",
-        "ignorePartialSupport": true
-      }
-    ],
+    "plugin/no-unsupported-browser-features": null,
     "plugin/selector-bem-pattern": {
       "preset": "bem"
     },
