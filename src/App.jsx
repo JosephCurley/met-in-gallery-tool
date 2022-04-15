@@ -113,14 +113,13 @@ const App = () => {
 	}
 
 	const handleSaveObject = () => {
+		const savedObjectsRef = {};
 		const newObject = {
-			title: activeObject.title,
+			title: activeObject.title || activeObject.accessionNumberr,
 			primaryImageSmall: activeObject.primaryImageSmall
 		};
-
-		const tempObjectsRef = JSON.parse(localStorage.getItem('savedObjects')) || {};
-		tempObjectsRef[activeObject?.objectID] = newObject;
-		setSavedObjects(tempObjectsRef);
+		savedObjectsRef[activeObject?.objectID] = newObject;
+		setSavedObjects(prevData => ({...prevData, ...savedObjectsRef}));
 	};
 
 	const handleRemoveObject = () => {
