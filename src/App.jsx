@@ -12,7 +12,7 @@ import './app.scss';
 
 const url = new URL(`${window.location}`);
 const params = new URLSearchParams(url.search.slice(1));
-
+const saveable = params.get("nosave") !== "1";
 const hashids = new Hashids()
 let abortController = null;
 
@@ -23,7 +23,7 @@ const App = () => {
 
 	const [activeURL, setActiveURL] = useState();
 	const [activeURLCurrent, setActiveURLCurrent] = useState(false);
-
+	const [enableSave] = useState(saveable);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [isSearching, setIsSearching] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
@@ -304,6 +304,7 @@ const App = () => {
 						</div> : activeObject ?
 							(
 								<ActiveObject
+									enableSave={enableSave}
 									savedObjects={savedObjects}
 									object={activeObject}
 									handleSavedObjectChange={handleSavedObjectChange}
@@ -314,112 +315,114 @@ const App = () => {
 					}
 				</div>
 			</main>
-			<section className="sidebar">
-				<div className="sidebar__title">
-					<h1 className="saved-objects__header">
-						<a
-							tabIndex="0"
-							className="sidebar__title-link"
-							onClick={() => scrollToRef(objectsGridRef)}
-							onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
-							role="button">
-							{activeCollectionName ? activeCollectionName : `Saved Objects`}
-						</a>
-					</h1>
-					{activeURL && (
-						<div className="sidebar__copy-link">
+			{ enableSave &&
+				(<section className="sidebar">
+					<div className="sidebar__title">
+						<h1 className="saved-objects__header">
+							<a
+								tabIndex="0"
+								className="sidebar__title-link"
+								onClick={() => scrollToRef(objectsGridRef)}
+								onKeyDown={e => e.key === 'Enter' && scrollToRef(objectsGridRef)}
+								role="button">
+								{activeCollectionName ? activeCollectionName : `Saved Objects`}
+							</a>
+						</h1>
+						{activeURL && (
+							<div className="sidebar__copy-link">
+								<button
+									type="button"
+									className="saved-objects__copy-link"
+									onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
+									onClick={copyURLtoClipboard}>
+									{activeURLCurrent ? 'Copied!' : 'Copy Sharable Collection Link'}
+								</button>
+							</div>
+						)}
+					</div>
+					<div className="sidebar__section">
+						<div className="collections__save-bar">
+							<input
+								className="collection-input"
+								key="activeCollectionNameBar"
+								placeholder="Enter a Collection Name"
+								value={activeCollectionName}
+								onKeyDown={e => e.key === 'Enter' && createCollection()}
+								onChange={event => setActiveCollectionName(event.target.value)}
+							/>
 							<button
 								type="button"
-								className="saved-objects__copy-link"
-								onKeyDown={e => e.key === 'Enter' && copyURLtoClipboard}
-								onClick={copyURLtoClipboard}>
-								{activeURLCurrent ? 'Copied!' : 'Copy Sharable Collection Link'}
+								className="button button--secondary collections__save-button"
+								onClick={() => handleSaveCollection()}
+								onKeyDown={e => e.key === 'Enter' && handleSaveCollection()}>
+								{editingExistingCollection && activeCollectionName
+									? 'Update Collection'
+									: 'Save Collection'}
 							</button>
 						</div>
-					)}
-				</div>
-				<div className="sidebar__section">
-					<div className="collections__save-bar">
-						<input
-							className="collection-input"
-							key="activeCollectionNameBar"
-							placeholder="Enter a Collection Name"
-							value={activeCollectionName}
-							onKeyDown={e => e.key === 'Enter' && createCollection()}
-							onChange={event => setActiveCollectionName(event.target.value)}
-						/>
-						<button
-							type="button"
-							className="button button--secondary collections__save-button"
-							onClick={() => handleSaveCollection()}
-							onKeyDown={e => e.key === 'Enter' && handleSaveCollection()}>
-							{editingExistingCollection && activeCollectionName
-								? 'Update Collection'
-								: 'Save Collection'}
-						</button>
+						{Object.keys(savedObjects).length !== 0 ? (
+							<div className="saved-objects__grid" ref={objectsGridRef}>
+								{Object.keys(savedObjects).map(savedObject => {
+									return (
+										<SavedObject
+											key={savedObject}
+											objectNumber={savedObject}
+											handleNewActiveObject={handleNewActiveObject}
+											objectTitle={savedObjects[savedObject].title}
+											primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
+										/>
+									);
+								})}
+							</div>
+						) : (
+							<div>
+								<h4>Your current collection is empty.</h4>
+								<p>As you save objects they will be displayed here.</p>
+							</div>
+						)}
 					</div>
-					{Object.keys(savedObjects).length !== 0 ? (
-						<div className="saved-objects__grid" ref={objectsGridRef}>
-							{Object.keys(savedObjects).map(savedObject => {
-								return (
-									<SavedObject
-										key={savedObject}
-										objectNumber={savedObject}
-										handleNewActiveObject={handleNewActiveObject}
-										objectTitle={savedObjects[savedObject].title}
-										primaryImageSmall={savedObjects[savedObject].primaryImageSmall}
-									/>
-								);
-							})}
-						</div>
-					) : (
-						<div>
-							<h4>Your current collection is empty.</h4>
-							<p>As you save objects they will be displayed here.</p>
-						</div>
-					)}
-				</div>
-				<div className="sidebar__title sidebar__title--collections">
-					<h1 className="saved-objects__header">
-						<a
-							tabIndex="0"
-							className="sidebar__title-link"
-							onClick={() => scrollToRef(collectionsRef)}
-							onKeyDown={e => e.key === 'Enter' && scrollToRef(collectionsRef)}
-							role="button">
-							Collections
-						</a>
-					</h1>
-				</div>
-				<div className="sidebar__section">
-					<div ref={collectionsRef}>
-						<div>
-							{Object.keys(collections).length !== 0 ? (
-								<ul className="collection-items">
-									{Object.keys(collections).map(collection => {
-										return (
-											<CollectionItem
-												key={collection}
-												removeCollection={removeCollection}
-												handleSelectCollection={handleSelectCollection}
-												collectionLength={Object.keys(collections[collection].collectionObjects).length}
-												collectionURL={collections[collection].collectionURL}
-												collectionName={collection}
-											/>
-										);
-									})}
-								</ul>
-							) : (
-								<div>
-									<h4>You currently don&apos;t have any saved collections</h4>
-									<p>Collections are groups of saved objects.
-										Saving Items to collections allows you to easily share them via links.</p>
-								</div>
-							)}
+					<div className="sidebar__title sidebar__title--collections">
+						<h1 className="saved-objects__header">
+							<a
+								tabIndex="0"
+								className="sidebar__title-link"
+								onClick={() => scrollToRef(collectionsRef)}
+								onKeyDown={e => e.key === 'Enter' && scrollToRef(collectionsRef)}
+								role="button">
+								Collections
+							</a>
+						</h1>
+					</div>
+					<div className="sidebar__section">
+						<div ref={collectionsRef}>
+							<div>
+								{Object.keys(collections).length !== 0 ? (
+									<ul className="collection-items">
+										{Object.keys(collections).map(collection => {
+											return (
+												<CollectionItem
+													key={collection}
+													removeCollection={removeCollection}
+													handleSelectCollection={handleSelectCollection}
+													collectionLength={Object.keys(collections[collection].collectionObjects).length}
+													collectionURL={collections[collection].collectionURL}
+													collectionName={collection}
+												/>
+											);
+										})}
+									</ul>
+								) : (
+									<div>
+										<h4>You currently don&apos;t have any saved collections</h4>
+										<p>Collections are groups of saved objects.
+											Saving Items to collections allows you to easily share them via links.</p>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
-				</div>
-			</section>
+				</section>)
+			}
 		</div>
 	);
 };

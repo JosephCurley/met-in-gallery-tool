@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
+const ActiveObject = ({ object, handleSavedObjectChange, savedObjects, enableSave }) => (
 	<div className="active-object">
 		<div>
 			<div className="active-object__title-box">
@@ -19,7 +19,7 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 					</h2>
 				</div>
 				<div className="active-object__buttons">
-					{savedObjects[object?.objectID] ? (
+					{enableSave && (savedObjects[object?.objectID] ? (
 						<button
 							onClick={handleSavedObjectChange}
 							onKeyDown={e => e.key === 'Enter' && handleSavedObjectChange}
@@ -35,7 +35,9 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 							type="submit">
 							Save &#9829;
 						</button>
-					)}
+					)
+					)
+					}
 					<a
 						href={object?.objectURL}
 						target="_blank"
@@ -147,6 +149,7 @@ const ActiveObject = ({ object, handleSavedObjectChange, savedObjects }) => (
 );
 
 ActiveObject.propTypes = {
+	enableSave: PropTypes.bool,
 	savedObjects: PropTypes.object,
 	object: PropTypes.object,
 	handleSavedObjectChange: PropTypes.func
